@@ -1,6 +1,8 @@
+import Link from "next/link";
 import { UserButton } from "@clerk/nextjs";
 import { getCurrentUser } from "@/lib/current-user";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 export default async function DashboardPage() {
   const user = await getCurrentUser();
@@ -9,7 +11,12 @@ export default async function DashboardPage() {
     <div className="mx-auto max-w-4xl space-y-6 p-8">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold">Dashboard</h1>
-        <UserButton />
+        <div className="flex items-center gap-3">
+          <Button variant="outline" render={<Link href="/profile" />}>
+            Profile
+          </Button>
+          <UserButton />
+        </div>
       </div>
 
       <Card>
