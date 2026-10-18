@@ -6,6 +6,7 @@ import { eq, desc } from "drizzle-orm";
 import { uploadResumeFile } from "@/lib/storage/r2";
 import { extractResumeText, UnsupportedResumeFormatError } from "@/lib/resume-text-extraction";
 import { parseResumeText, toParsedProfileJson } from "@/lib/ai/parse-resume";
+import { inngest } from "@/inngest/client";
 
 const ALLOWED_CONTENT_TYPES = new Set([
   "application/pdf",
@@ -97,6 +98,8 @@ export async function POST(req: Request) {
       parsedJson: toParsedProfileJson(parsed),
     })
     .returning();
+
+  await inngest.send({ name: "profile/updated", data: { profileId: created.id } });
 
   return NextResponse.json({ profile: created });
 }

@@ -38,3 +38,48 @@ export async function getResumeDownloadUrl(key: string): Promise<string> {
   const command = new GetObjectCommand({ Bucket: bucket, Key: key });
   return getSignedUrl(r2Client, command, { expiresIn: 60 * 10 });
 }
+
+export async function uploadTailoredResumePdf(params: {
+  userId: string;
+  applicationId: string;
+  body: Uint8Array;
+}): Promise<{ key: string }> {
+  const key = `tailored-resumes/${params.userId}/${params.applicationId}.pdf`;
+
+  await r2Client.send(
+    new PutObjectCommand({
+      Bucket: bucket,
+      Key: key,
+      Body: params.body,
+      ContentType: "application/pdf",
+    }),
+  );
+
+  return { key };
+}
+
+export async function uploadApplicationScreenshot(params: {
+  userId: string;
+  applicationId: string;
+  body: Buffer;
+}): Promise<{ key: string }> {
+  const key = `application-screenshots/${params.userId}/${params.applicationId}.png`;
+
+  await r2Client.send(
+    new PutObjectCommand({
+      Bucket: bucket,
+      Key: key,
+      Body: params.body,
+      ContentType: "image/png",
+    }),
+  );
+
+  return { key };
+}
+
+export async function getObjectBuffer(key: string): Promise<Buffer> {
+  const res = await r2Client.send(new GetObjectCommand({ Bucket: bucket, Key: key }));
+  const bytes = await res.Body?.transformToByteArray();
+  if (!bytes) throw new Error(`R2 object not found or empty: ${key}`);
+  return Buffer.from(bytes);
+}

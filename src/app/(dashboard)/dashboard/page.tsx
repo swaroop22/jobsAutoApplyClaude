@@ -12,6 +12,9 @@ export default async function DashboardPage() {
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold">Dashboard</h1>
         <div className="flex items-center gap-3">
+          <Button variant="outline" render={<Link href="/jobs" />}>
+            Jobs
+          </Button>
           <Button variant="outline" render={<Link href="/profile" />}>
             Profile
           </Button>

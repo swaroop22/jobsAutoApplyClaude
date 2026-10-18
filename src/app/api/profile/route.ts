@@ -4,6 +4,7 @@ import { db } from "@/db/client";
 import { profiles } from "@/db/schema";
 import { eq, desc } from "drizzle-orm";
 import { getCurrentUser } from "@/lib/current-user";
+import { inngest } from "@/inngest/client";
 
 export async function GET() {
   const user = await getCurrentUser();
@@ -97,6 +98,8 @@ export async function PATCH(req: Request) {
       eeoJson: latest.eeoJson,
     })
     .returning();
+
+  await inngest.send({ name: "profile/updated", data: { profileId: updated.id } });
 
   return NextResponse.json({ profile: updated });
 }
